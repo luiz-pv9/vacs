@@ -1,0 +1,9 @@
+- hosts: all
+  sudo: true
+  vars:
+    bashrc_path: /home/vagrant/.bashrc
+  roles:
+    - common
+    - mongodb_3.2
+    - mysql_5.7
+    - golang_1.5

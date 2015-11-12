@@ -1,0 +1,29 @@
+- name: verifies previous go installation
+  stat: path=/usr/local/go/bin/go
+  register: go_bin
+
+- name: downloads golang binaries
+  get_url:
+    url: "{{ golang_url_prefix }}{{ golang_target}}{{ golang_extension }}"
+    dest: /tmp/go{{ golang_extension }}
+  when: go_bin.stat.exists == False
+
+- name: extracs golang binaries
+  unarchive: src=/tmp/go{{ golang_extension }} dest=/usr/local copy=no
+  when: go_bin.stat.exists == False
+
+- name: declares goroot variable
+  shell: echo "export GOROOT=/usr/local/go" >> {{ bashrc_path }}
+  when: go_bin.stat.exists == False
+
+- name: declares gopath variable
+  shell: echo "export GOPATH=\$HOME/go" >> {{ bashrc_path }}
+  when: go_bin.stat.exists == False
+
+- name: adds go binaries to path
+  shell: echo "export PATH=\$GOROOT/bin:\$PATH" >> {{ bashrc_path }}
+  when: go_bin.stat.exists == False
+
+- name: creates go source tree
+  shell: mkdir ~/go ~/go/src ~/go/bin ~/go/pkg
+  when: go_bin.stat.exists == False

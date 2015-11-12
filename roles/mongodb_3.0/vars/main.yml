@@ -1,0 +1,4 @@
+---
+mongodb_url_prefix: http://fastdl.mongodb.org/linux/
+mongodb_target: mongodb-linux-x86_64-rhel70-3.0.7
+mongodb_extension: .tgz

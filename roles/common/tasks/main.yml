@@ -1,0 +1,2 @@
+- name: installs wget
+  yum: name=wget state=installed

@@ -1,0 +1,4 @@
+---
+mysql_repository_url_prefix: http://dev.mysql.com/get/
+mysql_repository_target: mysql57-community-release-el7-7.noarch.rpm
+mysql_root_password: 'Rootpass1@'

@@ -1,0 +1,23 @@
+- name: downloads repository registry definition
+  get_url:
+    url: "{{ mysql_repository_url_prefix }}{{ mysql_repository_target }}"
+    dest: /tmp/
+    mode: 0755
+
+- name: adds the repository info
+  yum: name=/tmp/{{ mysql_repository_target }} state=present
+
+- name: installs mysql
+  yum: name=mysql-community-server state=latest
+  notify:
+    - enable mysqld
+
+- name: starts mysqld 
+  service: name=mysqld state=started
+
+- name: identify generated password
+  shell: grep 'temporary password' /var/log/mysqld.log | awk 'END {print $NF}'
+  register: root_password
+
+- name: update root password
+  command: mysql --connect-expired-password -uroot -p'{{ root_password.stdout }}' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';"

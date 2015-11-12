@@ -1,0 +1,44 @@
+- name: verifies current version of mongodb
+  stat: path=/usr/local/mongodb/bin/mongod
+  register: mongodb_bin
+
+- name: downloads mongodb binaries
+  get_url:
+    url: "{{ mongodb_url_prefix }}{{ mongodb_target }}{{ mongodb_extension }}"
+    dest: /tmp/mongodb{{ mongodb_extension }}
+    mode: 0755
+  when: mongodb_bin.stat.exists == False
+
+- name: extracts mongodb archive
+  unarchive: src=/tmp/mongodb{{ mongodb_extension }} dest=/usr/local copy=false
+  when: mongodb_bin.stat.exists == False
+
+- name: renames mongodb directoy to mongodb
+  command: 
+    creates=/usr/local/mongodb 
+    removes=/usr/local/{{ mongodb_target }}
+    mv /usr/local/{{ mongodb_target }} /usr/local/mongodb 
+  when: mongodb_bin.stat.exists == False
+           
+- name: creates directory for mongodb data
+  file: path=/var/mongodb/data state=directory
+  when: mongodb_bin.stat.exists == False
+
+- name: creates user for mongodb
+  user: name=mongo_user
+  when: mongodb_bin.stat.exists == False
+
+- name: grant permission to mongo_user in /var/mongodb/data
+  file: path=/var/mongodb/ owner=mongo_user group=mongo_user recurse=yes
+  when: mongodb_bin.stat.exists == False
+
+- name: uploads mongodb configuration
+  copy: src=mongod.conf dest=/etc/mongod.conf
+  when: mongodb_bin.stat.exists == False
+
+- name: uploads mongodb systemctl
+  copy: src=mongod.service dest=/usr/lib/systemd/system/mongod.service
+  when: mongodb_bin.stat.exists == False
+  notify:
+    - start mongodb
+    - register mongodb

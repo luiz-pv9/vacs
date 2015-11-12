@@ -1,0 +1,4 @@
+---
+golang_url_prefix: https://storage.googleapis.com/golang/
+golang_target: go1.5.1.linux-amd64
+golang_extension: .tar.gz

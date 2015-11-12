@@ -1,0 +1,12 @@
+- name: uploads mongodb.repo file
+  copy: src=mongodb.repo dest=/etc/yum.repos.d/mongodb-org-3.2.repo
+
+- name: installs mongodb from repository
+  yum: name=mongodb-org state=latest
+
+- name: uploads selinux config to disable it
+  copy: src=selinux.conf dest=/etc/selinux/conf
+  notify:
+    - start mongodb
+    - enable mongodb
+
